@@ -1,0 +1,40 @@
+<html>
+    <head>
+        <title>getUserLogs consumer</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    </head>
+
+    <body>
+        <div>
+            <p>Consumer REST service</p>
+			<p> Username <input type="text" id="username" value="test1" /> </p>
+            <p class="greeting-content"><input type="button" value="Login" onclick="javascript:eseguilogin()" /> </p>
+			<p id="displaylogged"> </p>
+        </div>
+    </body>
+	
+	
+	
+	<script language="javascript">
+	function formToJSON() {
+	
+		var user = document.getElementById("username").value;
+		return JSON.stringify({"username":user});
+	}
+	function eseguilogin()
+	{
+		document.getElementById("displaylogged").innerHTML="";
+		$.ajax({
+			  type: "POST",
+			  contentType: 'application/json',
+			  url: "http://127.0.0.1:8080/UsersSOA/rest/users/getlogin",
+			  data : formToJSON(),
+			  dataType : "text",
+			  success: function(resp)
+			  {	document.getElementById("displaylogged").innerHTML=resp;
+			  }
+			});
+	}
+
+	</script>
+</html>

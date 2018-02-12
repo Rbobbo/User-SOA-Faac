@@ -1,0 +1,73 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jaxws="http://cxf.apache.org/jaxws"
+	xmlns:ws="http://jax-ws.dev.java.net/spring/core"
+	xmlns:wss="http://jax-ws.dev.java.net/spring/servlet"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+			http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
+			http://www.springframework.org/schema/aop 
+			http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+			http://www.springframework.org/schema/tx
+		    http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+		    http://www.springframework.org/schema/context
+		    http://www.springframework.org/schema/context/spring-context.xsd
+		    http://jax-ws.dev.java.net/spring/core 
+	      	http://jax-ws.java.net/spring/core.xsd
+	      	http://jax-ws.dev.java.net/spring/servlet 
+	      	http://jax-ws.java.net/spring/servlet.xsd">
+		    
+    
+	<!-- Connection DB -->
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+      <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+      <property name="url" value="jdbc:mysql://localhost:3306/soatest"/>
+      <property name="username" value="root"/>
+      <property name="password" value="root"/>
+  	</bean>
+	
+	<!-- Session factory Hibernate define -->
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="annotatedClasses">
+			<list>
+				<value>it.faac.entity.UserEntity</value>
+			</list>
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+				<prop key="hibernate.show_sql">true</prop>
+			</props>
+		</property>
+	</bean>
+    
+    <!-- Beans configurations -->
+    <context:annotation-config />
+    
+    <bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+	<bean id="userdaoimpl" class="it.faac.entity.dao.impl.UserDAOImpl">
+	</bean>
+ 
+	<context:component-scan base-package="it.faac.main.service.rest.impl" />
+ 
+	<bean id="soapMainServiceImpl" class="it.faac.main.service.soap.impl.SoapMainServiceImpl">
+		<property name="userDao" ref="userdaoimpl" />
+	</bean>
+	
+	<!-- Soap binding -->
+	<wss:binding url="/soap/getUsers">
+		<wss:service>
+			<ws:service bean="#soapMainServiceImpl" />
+		</wss:service>
+	</wss:binding>
+    
+</beans>
+    
+    
+    
